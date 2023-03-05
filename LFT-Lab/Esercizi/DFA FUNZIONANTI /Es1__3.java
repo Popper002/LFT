@@ -1,6 +1,19 @@
 
 // DFA FUNZIONANTE 
-
+/* 
+Esercizio 1.3. Progettare e implementare un DFA che riconosca il linguaggio di stringhe che
+contengono un numero di matricola seguito (subito) da un cognome, dove la combinazione di
+matricola e cognome corrisponde a studenti del corso A che hanno un numero di matricola pari
+oppure a studenti del corso B che hanno un numero di matricola dispari. Si ricorda che gli
+studenti del corso A sono quelli con cognomi la cui iniziale `e compresa tra A e K, e gli studenti
+del corso B sono quelli con cognomi la cui iniziale `e compresa tra L e Z.
+Per esempio, “123456Bianchi” e “654321Rossi” sono stringhe del linguaggio, mentre
+“654321Bianchi” e “123456Rossi” no. Nel contesto di questo esercizio, un numero di ma-
+tricola non ha un numero prestabilito di cifre (ma deve essere composto di almeno una cifra). Un
+cognome corrisponde a una sequenza di lettere, e deve essere composto di almeno una lettera.
+Quindi l’automa deve accettare le stringhe “2Bianchi” e “122B” ma non “654322” e “Rossi”.
+Assicurarsi che il DFA sia minimo.
+*/
 public class Es1__3 {
 
     public static boolean scan(String s) {
@@ -45,9 +58,12 @@ public class Es1__3 {
                         state = -1;
                     break;
                 case 3:
-                   if(state==3)
-                        state=3; 
-
+                 if(Character.isDigit(ch)) 
+                        state=0; 
+                        else if( Character.isLetter(ch) && ch >=65 &&ch<=75)
+                        state =1;
+                        else if(Character.isLetter(ch) && ch >=76 &&ch <=90 )
+                        state =2; 
                     else 
                      state= -1; 
                     break;
@@ -75,6 +91,8 @@ public class Es1__3 {
         System.out.println(scan("1Porco2deo")? "OK": "NOPE"); //Atteso --> Nope  //DA FIXARE POICHE' ANCHE CON LETTERE DOPO COGNOME ENTRA NELLO STATO 3
         System.out.println(scan("212334FIKA") ? "OK": "NOPE"); //Atteso--> OK
         System.out.println(scan("0000000")? "OK": "NOPE") ; //ATTESO --> NOPE
+        System.out.println(scan("0000000CIAO2121")? "OK": "NOPE") ; //ATTESO --> NOPE
+        
 
 
 
