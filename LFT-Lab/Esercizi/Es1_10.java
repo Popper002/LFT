@@ -16,9 +16,8 @@ public class Es1_10
             state =1; 
             else if(ch=='a');
             state =1;
-
-        
         break;
+        
         case 1: 
           if(ch == '/')
           state = 2;
