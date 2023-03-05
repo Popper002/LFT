@@ -13,15 +13,15 @@ public class Es1_10
             if(ch =='/')
             state =1; 
             else if( ch =='*')
-            state =0; 
+            state =1; 
             else if(ch=='a');
-            state =0;
+            state =1;
 
-            state =-1; 
+        
         break;
         case 1: 
           if(ch == '/')
-          state = 1;
+          state = 2;
           else if( ch =='*')
           state =2; 
           else if ( ch == 'a')
@@ -33,7 +33,7 @@ public class Es1_10
           else if( ch == '*')
           state =3; 
           else if( ch =='a')
-          state =2; 
+          state =4; 
           break;
         case 3: 
           if ( ch == '/')
@@ -41,19 +41,16 @@ public class Es1_10
           else if( ch =='*')
           state =3;
           else if( ch =='a')
-          state =2; 
+          state =4; 
           break; 
           case 4: 
-            if  (ch == '/')
-            state =0; 
-            else if ( ch == '*' || ch == 'a')
-            state =0; 
-            break; 
+           state =4;
+           break;
       }
     }
     return state ==4 ;
-  }
 
+  }
     public static void main(String[] args) {
       System.out.println("-------------TEST-CONSEGNA------------------ ");
       System.out.println(scan("aaa/****/aa") ? "OK" : "NOPE");// atteso--->ok
@@ -78,4 +75,4 @@ public class Es1_10
 
 
   }  
- } 
+}
