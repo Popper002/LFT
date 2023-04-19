@@ -1,7 +1,6 @@
-package Laxer_java;
+package LEXER;
 
-import java.io.*; 
-import java.util.*;
+import java.io.*;
 
 public class Lexer {
 
@@ -47,11 +46,12 @@ public class Lexer {
 
             default:
                 if (Character.isLetter(peek)) {
+                    return null;
 
 	// ... gestire il caso degli identificatori e delle parole chiave //
 
                 } else if (Character.isDigit(peek)) {
-
+                    return null;
 	// ... gestire il caso dei numeri ... //
 
                 } else {

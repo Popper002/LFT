@@ -12,65 +12,10 @@ public class Es1_6 {
             
         switch(state){ 
 
-        case 0:
-         if(Character.isDigit(ch)&&ch%2==0) 
-          state=1; 
-          else if (Character.isDigit(ch)&&ch%2==1) 
-          state=2;
-          else 
-           state =-1; 
-           break; 
-
-        case 1: 
-        
-         if(ch>='a'&& ch<='k') 
-         state =3 ;
-         else if(ch>='A'&& ch<='K') 
-         state =4; 
-         else 
-          state =0; 
-          break ; 
-        
-        case 2: 
-        if(ch>='l'&& ch<='z') 
-        state =6 ;
-        else if(ch>='L'&& ch<='Z') 
-        state =5 ;
-           break; 
-
-        case 3: 
-           if(ch>='a'&& ch<='k') 
-         state =7;
-          else 
-           state =0; 
-            break; 
-        case 4: 
-            if(ch>='A'&& ch<='K') 
-                state =7;
-            else 
-                state =0; 
-                    break ;  
-         
-        case 5: 
-            if(ch>='L'&& ch<='Z') 
-                state =7 ;
-            else 
-                state =0; 
-                    break;
-        case 6: 
-            if(ch>='l'&& ch<='z') 
-                state =7;
-                 state =0; 
-                 break; 
-        case 7: 
-         
-           state=7; 
-            break; 
-        
-
+      
         }  
     } 
-        return state ==7 ; 
+        return; 
     } 
 
 

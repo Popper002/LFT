@@ -8,64 +8,56 @@ public class Es1_5 {
         int state = 0;
         int i = 0;
         while (state >= 0 && i < s.length()) {
-            final char ch = s.charAt(i++);
-            
-        switch(state){ 
-
+            final char ch = s.charAt(i++);    
+        switch(state)
+        { 
         case 0:
-         
-        if(ch>='A'&& ch<='K')
-           state =1;
-        //else if(ch>='a'&& ch<='k') 
-          // state =2 ; 
-        else if(ch>='L'&& ch<='Z') 
+        if(ch>=65&& ch<=75)
+           state =1; 
+        else if(ch>=76&& ch<=90) 
           state =2; 
-        //else if(ch>='l'&& ch<='z')
-          // state=4; 
-           else 
-             state=-1; 
           break; 
         
-        case 1: //Corso A MAISCULE  
-          if(Character.isDigit(ch)&&ch%2==0)
-            state =5; 
-        else
-           state =-1; 
-           break; 
+        case 1://minuscole   
+        if(ch>=65& ch<=75) //A-K 
+          state =1; 
+        else if(ch>=97&& ch<=107) //a-k 
+          state =4; 
+          break;
         
         case 2 : //Corso A minuscole 
-
-        if(Character.isDigit(ch)&&ch%2==0)
-           state=5;
-         else 
-            state=0;  
-            break; 
-        case 3: //DISPARI MAISCULO 
-        if(Character.isDigit(ch)&&ch%2==1)
-            state=6; 
-        else 
-         state =-1; 
-            break; 
-        
-        case 4 : //DISPARI MINUSCOLO
-         if(Character.isDigit(ch)&&ch%2==1)
-         state=6; 
-           break;
-           
-        case 5:  // STATO DI UNIONE TRA I PARI(A)
-           if(Character.isDigit(ch)&&ch%2==0)
-            state =7; 
-             break; 
-
-        case 6: //STATO DI UNIONE TRA I DISPARI(B)
-        if(Character.isDigit(ch)&&ch%2==0)
-          state =5; 
-          if(Character.isDigit(ch)&&ch%2==1)
-              state =7;
+            if( ch >= 76 && ch <= 108)
+                state =2;
+              else if ( ch>=108 && ch <= 122)
+              state =3; 
               break;  
-            } 
-        } 
-        return state == 7; 
+          case 3: 
+            while(i < s.length()-1)
+            {
+              if(ch >= 48 && ch <= 57)
+              {
+                if(ch % 2 == 0){
+                    state = 5;
+            }else 
+              state =4; 
+          }
+        }
+            break; 
+       case 4: 
+       while( i< s.length()-1)
+       {
+        if(ch >= 48 && ch <= 57)
+          {
+        if(ch % 2 != 0)
+        {
+            state = 5;
+        } else 
+        state =3;
+          }
+      } 
+    }
+  }
+        return state == 5; 
   }
 
 //DA FIXARE LE MAIUSCOLE NON ENTRANO 
