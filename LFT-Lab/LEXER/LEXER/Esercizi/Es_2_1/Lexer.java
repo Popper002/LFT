@@ -117,12 +117,45 @@ public class Lexer {
                 return new Token(Tag.EOF);
 
             default:
+             String str_ = " "; 
                 if (Character.isLetter(peek)) {
-                        return null; 
+                    
+                    switch(str_)
+                    {
+                        case "if":
+                            return Word.iftok;
+                        case "else":
+                            return Word.elsetok;
+                        case "while":
+                            return Word.whiletok;
+                        case "begin":
+                            return Word.begin;
+                        case "end":
+                            return Word.end;
+                        case "print":
+                            return Word.print;
+                        case "read":
+                            return Word.read;
+                        case "to":  
+                            return Word.to;
+                        case "assign":
+                            return Word.assign;
+                        default:
+                            return new Word(Tag.ID,str_);
+                    }
+                   
+
 	// ... gestire il caso degli identificatori e delle parole chiave //
 
                 } else if (Character.isDigit(peek)) {
-                    return null;
+            
+                   str_= str_+peek; 
+                     readch(br);
+                     while(Character.isLetter(peek) || Character.isDigit(peek)){
+                        str_+= peek;
+                        readch(br);
+                    }
+                    return new NumberTok(Tag.NUM, Integer.parseInt(str_);
 
 	// ... gestire il caso dei numeri ... //
 
