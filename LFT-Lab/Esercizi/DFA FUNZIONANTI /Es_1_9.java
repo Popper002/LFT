@@ -11,7 +11,6 @@ gio di “commenti” delimitati da /* (all’inizio) e */
 
 public class Es_1_9 {
     public static boolean scan(String s) {
-
         int state = 0;
         int i = 0;
         while (state >= 0 && i < s.length()) {
