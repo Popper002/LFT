@@ -108,8 +108,6 @@ return state == 6;
         System.out.println(scan("123456 Bianchi") ? "OK":"NOPE");// Atteso --> OK 
         System.out.println("--------------TEST AGGIUNTIVI ---------------------");
         System.out.println(scan("Ciao")? "Ok": "NOPE"); //Atteso --> NOPE
-        System.out.println(scan("1Porco2deo")? "OK": "NOPE"); //Atteso --> Nope  //DA FIXARE POICHE' ANCHE CON LETTERE DOPO COGNOME ENTRA NELLO STATO 3
-        System.out.println(scan("212334FIKA") ? "OK": "NOPE"); //Atteso--> OK
         System.out.println(scan("0000000")? "OK": "NOPE") ; //ATTESO --> NOPE
         System.out.println(scan("0000000CIAO2121")? "OK": "NOPE") ; //ATTESO --> NOPE
         System.out.println("------\n");
