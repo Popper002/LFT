@@ -155,14 +155,14 @@ public class Lexer {
                         str_+= peek;
                         readch(br);
                     }
-                    return new NumberTok(Tag.NUM, Integer.parseInt(str_);
+                    return new Tag();
 
 	// ... gestire il caso dei numeri ... //
 
                 } else {
                         System.err.println("Erroneous character: " 
                                 + peek );
-                        return null;
+                        return  new NumberTok(Tag.NUM, Integer.parseInt(str_);
                 }
          }
     }    
@@ -170,7 +170,7 @@ public class Lexer {
 		
     public static void main(String[] args) {
         Lexer lex = new Lexer();
-        String path = "...path..."; // il percorso del file da leggere
+        String path = "./Esercizi/Input.txt"; // il percorso del file da leggere
         try {
             BufferedReader br = new BufferedReader(new FileReader(path));
             Token tok;
