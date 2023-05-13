@@ -114,10 +114,7 @@ public class Lexer {
 	// ... gestire i casi di || < > <= >= == <> ... //
           
             case (char)-1:
-                return new Token(Tag.EOF);
-
-            default:
-             String str_ = " "; 
+                return new Token(Tag.EOF); 
                 if (Character.isLetter(peek)) {
                     
                     switch(str_)
@@ -141,7 +138,49 @@ public class Lexer {
                         case "assign":
                             return Word.assign;
                         default:
-                            return new Word(Tag.ID,str_);
+                            StringBuilder str = new StringBuilder(peek);
+                            boolean letter = false; 
+                            boolean number = false;
+                            while(Character.isLetter(peek)||Character.isDigit(peek))
+                            {
+                                 
+                                readch(br);
+                                if(Character.isLetter(peek))
+                                {
+                                    letter=true;
+                                    number=false; 
+                                }
+                                if(Character.isDigit(peek))
+                                {
+                                    letter =false;
+                                    number = true; 
+                                }
+                                //confronto il contenuto in stringa con gli effettivi tag 
+                                if(str.equals("print"))
+                                {
+                                    return Word.print;
+                                }
+                                if(str.equals("if"))
+                                {
+                                    return Word.iftok;
+                                }
+                                if(str.equals("else"))
+                                {
+                                    return Word.elsetok;
+                                }
+                                if(str.equals("read"))
+                                {
+                                    return Word.read;
+                                }
+                                if(str.equals("while"))
+                                {
+                                    return Word.whiletok; 
+                                }
+
+                            } 
+
+
+                            return new Word(Tag.ID,str.toString());
                     }
                    
 
@@ -162,7 +201,7 @@ public class Lexer {
                 } else {
                         System.err.println("Erroneous character: " 
                                 + peek );
-                        return  new NumberTok(Tag.NUM, Integer.parseInt(str_);
+                        return  new NumberTok(Tag.NUM, Integer.parseInt(str_));
                 }
          }
     }    
