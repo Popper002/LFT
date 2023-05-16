@@ -116,8 +116,8 @@ public class Lexer {
             case (char)-1:
                 return new Token(Tag.EOF); 
                 if (Character.isLetter(peek)) {
-                    
-                    switch(str_)
+                   /*  
+                    switch()
                     {
                         case "if":
                             return Word.iftok;
@@ -137,6 +137,7 @@ public class Lexer {
                             return Word.to;
                         case "assign":
                             return Word.assign;
+                            */
                         default:
                             StringBuilder str = new StringBuilder(peek);
                             boolean letter = false; 

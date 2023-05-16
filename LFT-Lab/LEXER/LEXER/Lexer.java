@@ -23,10 +23,62 @@ public class Lexer {
         
         switch (peek) {
             case '!':
+               readch(br);
                 peek = ' ';
                 return Token.not;
 
-	// ... gestire i casi di ( ) { } + - * / ; , ... //
+            case '(':
+                    readch(br);
+                        peek=' '; 
+                        return Token.lpt;
+            case ')':
+                    readch(br);
+                    peek=' '; 
+                    return Token.rpt;
+        
+           case '[':
+                    readch(br);
+                    peek=' ';
+                    return Token.lpg;
+            case ']':
+                readch(br);
+                peek=' '; 
+                return Token.rpq;
+            case '{':
+                    readch(br);
+                    peek=' '; 
+                    return Token.lpg; 
+            case '}':
+                    readch(br);
+                    peek=' '; 
+                    return Token.rpg;
+            case '+':
+                readch(br);
+                peek=' '; 
+                return Token.plus; 
+            case '-':
+                readch(br);
+                peek=' '; 
+                return Token.minus;
+            case '*':
+                    readch(br);
+                    peek=' '; 
+                    return Token.mult;
+            case '/':
+                    readch(br);
+                    peek=' '; 
+                    return Token.div; 
+            case ';':
+                    readch(br);
+                    peek = ' '; 
+                    return Token.semicolon;
+            case ',':
+                    readch(br);
+                    peek= ' '; 
+                    return Token.comma;
+
+
+	// ... gestire i casi di ( ) [ ] { } + - * / ; , ... //
 	
             case '&':
                 readch(br);
@@ -38,20 +90,65 @@ public class Lexer {
                             + " after & : "  + peek );
                     return null;
                 }
+            case '<':
+                    readch(br);
+                    if(peek=='='){
+                    peek=' '; 
+                    return Word.le;
+                    }
+                    else if(peek=='>')
+                    {
+                        peek =' '; 
+                        return Word.ne;
+                    }
+                    else{
+                        return Word.lt;
+                    }
+            case '>':
+                    readch(br);
+                    if(peek=='=')
+                    {
+                        peek=' ';
+                        return Word.ge;
+                    }
+                     else if(peek=='<')
+                    {
+                        peek=' '; 
+                        return Word.ne;
+                    }
+                    else{
+                        return Word.gt;
+                    }
+            case '=':
+                    readch(br);
+                    if(peek=='=')
+                    {
+                        peek=' '; 
+                        return Word.eq;
+                    }        
 
+                case '|':
+                    readch(br);
+                    if(peek=='|')
+                    {
+                        peek=' ';
+                        return Word.or; 
+                    }
+                    
+             
 	// ... gestire i casi di || < > <= >= == <> ... //
           
+
             case (char)-1:
                 return new Token(Tag.EOF);
 
             default:
                 if (Character.isLetter(peek)) {
-                    return null;
 
 	// ... gestire il caso degli identificatori e delle parole chiave //
 
                 } else if (Character.isDigit(peek)) {
-                    return null;
+
 	// ... gestire il caso dei numeri ... //
 
                 } else {

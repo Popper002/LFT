@@ -1,12 +1,15 @@
 package LEXER;
 public class Token {
-    public final int tag;
+	public final int tag;
     public Token(int t) { tag = t;  }
+    @Override
     public String toString() {return "<" + tag + ">";}
     public static final Token
 	not = new Token('!'),
 	lpt = new Token('('),
 	rpt = new Token(')'),
+	lpq = new Token('['),
+	rpq = new Token(']'),
 	lpg = new Token('{'),
 	rpg = new Token('}'),
 	plus = new Token('+'),
@@ -15,6 +18,5 @@ public class Token {
 	div = new Token('/'),
 	semicolon = new Token(';'),
 	comma = new Token(',');
-	
 
 }
