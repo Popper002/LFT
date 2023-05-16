@@ -143,10 +143,50 @@ public class Lexer {
                 return new Token(Tag.EOF);
 
             default:
-                if (Character.isLetter(peek)) {
+            if(Character.isLetter(peek))
+            {      
+                String src = new String(); 
+             while (Character.isLetter(peek) || peek=='_' ||Character.isDigit(peek)) {
+                    src = src + peek ; 
+                    readch(br);
+             }
+             if(src.compareTo("if")==0)
+             {
+                return Word.iftok;
+             }
+             if(src.compareTo("else")==0)
+             {
+                return Word.elsetok; 
+             }
+             if(src.compareTo("while")==0)
+             {
+                return Word.whiletok; 
+             }
+             if(src.compareTo("begin")==0)
+             {
+                return Word.begin; 
+             }
+             if(src.compareTo("read")==0)
+             {
+                return Word.read;
+             }
+             if(src.compareTo("print")==0)
+             {
+                return Word.print;        
+             }
+             if(src.compareTo("to")==0)
+             {
+                return Word.to;
+             }
+             if(src.compareTo("end")==0)
+             {
+                return Word.end;
+             }
+
+             }
 
 	// ... gestire il caso degli identificatori e delle parole chiave //
-
+                
                 } else if (Character.isDigit(peek)) {
 
 	// ... gestire il caso dei numeri ... //
