@@ -1,6 +1,8 @@
 package LEXER;
 
+import LEXER.Esercizi.Es_2_1.Tag;
 import java.io.*;
+
 
 public class Lexer {
 
@@ -146,13 +148,14 @@ public class Lexer {
             if(Character.isLetter(peek))
             {      
                 String src = new String(); 
-             while (Character.isLetter(peek) || peek=='_' ||Character.isDigit(peek)) {
+                 while (Character.isLetter(peek) || peek=='_' ||Character.isDigit(peek))
+                  {
                     src = src + peek ; 
                     readch(br);
-             }
-             if(src.compareTo("if")==0)
+                   }
+             if(src.compareTo("conditional")==0)
              {
-                return Word.iftok;
+                return Word.conditional;
              }
              if(src.compareTo("else")==0)
              {
@@ -182,26 +185,53 @@ public class Lexer {
              {
                 return Word.end;
              }
-
+             if(src.compareTo("option")==0)
+             {
+                return Word.option;
              }
+             if(src.compareTo("assign")==0)
+             {
+                return Word.assign;
+             }
+             if(src.compareTo("do")==0)
+             {
+                return Word.dotok;
+             }
+             return new Word(Tag.ID, src);
+            
+             
+             
 
 	// ... gestire il caso degli identificatori e delle parole chiave //
                 
-                } else if (Character.isDigit(peek)) {
+          
+                    } else if (Character.isDigit(peek)) 
 
-	// ... gestire il caso dei numeri ... //
-
-                } else {
-                        System.err.println("Erroneous character: " 
-                                + peek );
-                        return null;
+                    {
+                        String src_num = new String(); 
+                        while(Character.isDigit(peek))
+                        {
+                            src_num = src_num + peek ; 
+                            readch(br);
+                        }
+                        return new NumberTok(Tag.NUM,src_num); 
+                        // ... gestire il caso dei numeri ... //
+                     
+                    
+                    } else {
+                            System.err.println("Erroneous character: " 
+                                    + peek );
+                            return null;
+                    }
                 }
-         }
+                
+                    
+    
     }
 		
     public static void main(String[] args) {
         Lexer lex = new Lexer();
-        String path = "...path..."; // il percorso del file da leggere
+        String path = "/Users/popper/Documents/Uni/secondo anno /LFT/GIT/LFT/LFT-Lab/LEXER/LEXER/input.txt"; // il percorso del file da leggere
         try {
             BufferedReader br = new BufferedReader(new FileReader(path));
             Token tok;
