@@ -52,8 +52,7 @@ public class Lexer {
                     peek=' '; 
                     return Token.rpg;
             case '+':
-                readch(br);
-                peek=' '; 
+                readch(br); 
                 return Token.plus; 
             case '-':
                 readch(br);
@@ -172,7 +171,7 @@ public class Lexer {
                   {
                     src = src + peek ; 
                     readch(br);
-                                   }
+                }
              if(src.compareTo("conditional")==0)
              {
                 return Word.conditional;
@@ -226,29 +225,13 @@ public class Lexer {
                 
           
                     } else if (Character.isDigit(peek)) {
-                        int state = 0;
-                        String n = "";
-                        while (state >= 0 && Character.isDigit(peek)){
-                            switch (state){
-                                case 0:
-                                    if (peek == '0') state = 1;
-                                    else if (peek >= '1' && peek <= '9') state = 2;
-                                    else state = -1;
-                                    break;
-                                case 1:
-                                    if (peek >= '0' && peek <= '9') state = -1;
-                                    else state = -1;
-                                    break;
-                                case 2:
-                                    if (peek >= '0' && peek <= '9') state = 2;
-                                    else state = -1;
-                                    break;
-                            }
+                        String n = new String();
+                        while(Character.isDigit(peek)){
                             n = n + peek;
                             readch(br);
                         }
-                        if (state == 1 || state == 2) return new NumberTok(Tag.NUM, String.valueOf(n));
-                        else return null;
+                         return new NumberTok(Tag.NUM, String.valueOf(n));
+                       
 
                     } else {
                             System.err.println("Erroneous character: " 
