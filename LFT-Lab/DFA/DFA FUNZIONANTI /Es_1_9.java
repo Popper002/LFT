@@ -61,7 +61,7 @@ public class Es_1_9 {
         System.out.println(scan("/****/") ? "OK" : "NOPE");// atteso--->ok
         System.out.println(scan("/*a*a*/") ? "OK" : "NOPE");// atteso--->OK
         System.out.println(scan("/*a/**/") ? "OK" : "NOPE");// atteso-->Ok
-        System.out.println(scan("/**/***/") ? "OK" : "NOPE");// atteso-->NOPE NON VA SOLO QUESTO DA CONTROLLARE
+        System.out.println(scan("/**/***/") ? "OK" : "NOPE");// atteso-->NOPE
         System.out.println(scan("/*/") ? "OK" : "NOPE"); // Nope\
 
     }
