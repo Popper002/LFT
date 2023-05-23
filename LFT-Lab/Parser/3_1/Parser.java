@@ -104,7 +104,7 @@ public class Parser {
 		
     public static void main(String[] args) {
         Lexer lex = new Lexer();
-        String path = "/Users/popper/Documents/Uni/secondo anno /LFT/GIT/LFT/LFT-Lab/Parser/input.txt"; // il percorso del file da leggere
+        String path = "/Users/popper/Documents/Uni/secondo anno /LFT/GIT/LFT/LFT-Lab/Parser/3_1/input.txt"; // il percorso del file da leggere
         try {
             BufferedReader br = new BufferedReader(new FileReader(path));
             Parser parser = new Parser(lex, br);

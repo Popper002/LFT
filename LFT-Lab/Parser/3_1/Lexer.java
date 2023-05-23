@@ -38,7 +38,7 @@ public class Lexer {
            case '[':
                     readch(br);
                     peek=' ';
-                    return Token.lpg;
+                    return Token.lpq;
             case ']':
                 readch(br);
                 peek=' '; 
