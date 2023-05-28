@@ -79,7 +79,7 @@ public class Parser {
                 case Tag.EOF, '}':
                     break;
                 default:
-                    error("Rick è una scimmia non ammaestrata");
+                    error("ERROR IN STATLISTP\n");
 
             }
         }
