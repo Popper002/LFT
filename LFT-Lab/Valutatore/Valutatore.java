@@ -6,9 +6,9 @@ public class Valutatore {
     private Token look;
 
     public Valutatore(Lexer l, BufferedReader br) { 
-	lex = l; 
-	pbr = br;
-	move(); 
+	    lex = l; 
+	    pbr = br;
+	    move(); 
     }
    
     void move() { 
@@ -53,32 +53,29 @@ public class Valutatore {
             }
     	// ... completare ...
 
-    	expr_val = expr();
-	match(Tag.EOF);
-
-        System.out.println(expr_val);
+ 
 
 	// ... completare ...
     }
 
     private int expr() { 
-	int term_val=0, exprp_val=0,expr_val=0;
-    term_val=term();
-    exprp_val=exprp(term_val);
-    expr_val=exprp_val;
-    return exprp_val;
+	    int term_val=0, exprp_val=0,expr_val=0;
+        term_val=term();
+        exprp_val=exprp(term_val);
+        expr_val=exprp_val;
+            return exprp_val;
 
     }
 	// ... completare ...
     private int term()
-        {
+    {
         int term_val;
-    	term_val = term();
+    	term_val = termp(fact());
             return term_val;
-        }
+    }
    
     private int exprp(int exprp_i) {
-	int term_val, exprp_val;
+	int term_val, exprp_val=0;
 	switch (look.tag) {
 	case '+':
             match('+');
@@ -107,12 +104,12 @@ public class Valutatore {
                     case '*': 
                         match('*');
                         fact_val = fact(); 
-                        termp_val = termp(termp_i*fact_val); 
+                        termp_val = termp(termp_i * fact_val); 
                         return termp_val;
                     case '/':
                             match('/');
                             fact_val =fact();
-                            termp_val=termp(termp_i/fact_val); 
+                            termp_val=termp(termp_i / fact_val); 
                             return termp_val;
                     default:
                         termp_val = termp_i;
@@ -139,7 +136,7 @@ public class Valutatore {
                             error("SYNTAX ERROR\n"); 
                         }
                 case  Tag.NUM:
-                            fact_val = Lexer.getNUM();
+                            fact_val = Lexer.get_NUM();
                             match(Tag.NUM);
                             break;
                 default:
@@ -147,11 +144,12 @@ public class Valutatore {
                             break;
 
             }
+            return fact_val;
     }
 
     public static void main(String[] args) {
         Lexer lex = new Lexer();
-        String path = "...path..."; // il percorso del file da leggere
+        String path = "/Users/popper/Documents/Uni/secondo anno /LFT/GIT/LFT/LFT-Lab/Valutatore/input.txt"; // il percorso del file da leggere
         try {
             BufferedReader br = new BufferedReader(new FileReader(path));
             Valutatore valutatore = new Valutatore(lex, br);

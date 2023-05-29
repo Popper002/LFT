@@ -1,10 +1,12 @@
-import java.io.*;
+import java.io.BufferedReader;
+
+
 
 public class Translator {
     private Lexer lex;
     private BufferedReader pbr;
     private Token look;
-    
+    int  label_condition =0 ; // la inizializzo a true 
     SymbolTable st = new SymbolTable();
     CodeGenerator code = new CodeGenerator();
     int count=0;
@@ -66,23 +68,24 @@ public class Translator {
                 break;
             case Tag.ASSIGN:
                 match(Tag.ASSIGN); 
-                expr(); 
+                expr(label_condition); 
                 match(Tag.TO);
                 idlist();
-                
                 break;
             case Tag.PRINT:
                     match(Tag.PRINT);
                     match('[');
-                    exprlist();
+                    exprlist(label_condition);
                     match(']');
+                    code.emit(OpCode.invokestatic,1);
                     break;
             case Tag.WHILE:
                     match(Tag.WHILE);
                     match('(');
-                    bexpr();
+                    bexpr(label_condition);
                     match(')');
                     stat(); 
+              
                     break;
             case Tag.COND:
                         match(Tag.COND);
@@ -92,23 +95,25 @@ public class Translator {
                         if(look.tag==Tag.END)
                         {
                             match(Tag.END);
+                            
                             break;
                         }
                         else{
                             match(Tag.ELSE);
                             stat();
+                            code.emitLabel(label_condition);
                             match(Tag.END);
                             break;
                         }
-                        case '{':
+            case '{':
                             match('{'); 
                             statlist();
                             match('}'); 
                             break;
                         default:
-                                error("ERROR\n");
+                                error("ERROR STAT_FUNCTION\n");
                                 break;
-                        
+            
                  
 	// ... completare ...
         }
@@ -139,31 +144,31 @@ public class Translator {
                     break;
         }
     }
-    private void expr( /* completare */ ) {
+    private void expr( int label_condition ) {
         switch(look.tag) {
 	// ... completare ...
             case '-':
                 match('-');
-                expr();
-                expr();
+                expr(label_condition);
+                expr(label_condition);
                 code.emit(OpCode.isub);
                 break;
 	// ... completare ...
         }
     }
-    private void exprlist()
+    private void exprlist(int label_condition)
     {
-            expr();
-            exprlistp();
+            expr(label_condition);
+            exprlistp(label_condition);
     }
-    private void exprlistp()
+    private void exprlistp(int label_condition)
     {
         switch(look.tag)
         {
             case ',':
                     match(',');
-                    expr();
-                    exprlistp();
+                    expr(label_condition);
+                    exprlistp(label_condition);
                     break;
             default:
                 break;
@@ -194,22 +199,76 @@ public class Translator {
             case Tag.OPTION:
                 match(Tag.OPTION);
                 match('(');
-                bexpr();
+                bexpr(label_condition);
                 match(')');
                 match(Tag.DO);
                 stat();
                 break;
         }
     }
-    private void bexpr()
+    private void bexpr(int label_condition)
     {
-        if(look.tag==Tag.RELOP)
-        {
-            match(Tag.RELOP);
-            expr();
-            expr();
-        }
+            if(look==Word.eq)
+            {
+                    match(Tag.RELOP); 
+                    expr(label_condition);
+                    expr(label_condition);
+                    code.emit(OpCode.if_icmpeq, label_condition);
+                    label_condition=1;
+                    code.emit(OpCode.GOto, label_condition);
+            }
+            if(look==Word.ge)
+            {
+                match(Tag.RELOP);
+                expr(label_condition);
+                expr(label_condition);
+                code.emit(OpCode.if_icmpge, label_condition);
+                label_condition=1;
 
+                code.emit(OpCode.GOto,label_condition); 
+            }
+            if(look==Word.gt)
+            {
+                match(Tag.RELOP);
+                expr(label_condition);
+                expr(label_condition);
+                code.emit(OpCode.if_icmpgt, label_condition);
+                label_condition=1;
+
+                code.emit(OpCode.GOto, label_condition); 
+
+            }
+            if(look==Word.le)
+            {
+                match(Tag.RELOP);
+                expr(label_condition);
+                expr(label_condition);
+                code.emit(OpCode.if_icmple, label_condition);
+                label_condition=1;
+
+                code.emit(OpCode.GOto ,label_condition);
+                
+            }
+            if(look==Word.lt)
+            {
+                match(Tag.RELOP);
+                expr(label_condition);
+                expr(label_condition);
+                code.emit(OpCode.if_icmplt, label_condition);
+                label_condition=1;
+
+                code.emit(OpCode.GOto, label_condition);
+            }
+            if(look==Word.ne)
+            {
+                match(Tag.RELOP);
+                expr(label_condition);
+                expr(label_condition);
+                code.emit(OpCode.if_icmpne, label_condition);
+                label_condition=1;//false 
+                code.emit(OpCode.GOto, label_condition);
+            }
+            
     }
     private void statlistp()
     {
