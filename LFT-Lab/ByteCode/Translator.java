@@ -5,8 +5,8 @@ import java.io.BufferedReader;
 public class Translator {
     private Lexer lex;
     private BufferedReader pbr;
-    private Token look;
-    int  label_condition =0 ; // la inizializzo a true 
+    private Token look; 
+    
     SymbolTable st = new SymbolTable();
     CodeGenerator code = new CodeGenerator();
     int count=0;
@@ -82,29 +82,28 @@ public class Translator {
             case Tag.WHILE:
                     match(Tag.WHILE);
                     match('(');
-                    bexpr(label_condition);
+                    int label_start_while = code.newLabel();
+                    int label_true_while  = code.newLabel();
+                    int label_false_while = code.newLabel(); //gestisce l'end_while
+                    code.emitLabel(label_start_while);
+                    bexpr(label_true_while, label_false_while);
+                    code.emitLabel(label_true_while);
                     match(')');
-                    stat(); 
-              
+                    stat(); //gestisce le istruzioni
+                    code.emit(OpCode.GOto, label_start_while);
+                    code.emitLabel(label_false_while);
+              /* inserire print ,label * flusso while  */
                     break;
             case Tag.COND:
                         match(Tag.COND);
                         match('['); 
-                        oplist();
+                        int label_start_if = code.newLabel();
+                        int label_else =code.newLabel();
+                        int label_and=code.newLabel();
+                        oplist(label_and);
                         match(']'); 
-                        if(look.tag==Tag.END)
-                        {
-                            match(Tag.END);
-                            
-                            break;
-                        }
-                        else{
-                            match(Tag.ELSE);
-                            stat();
-                            code.emitLabel(label_condition);
-                            match(Tag.END);
-                            break;
-                        }
+
+                        /* inserire altre label  */
             case '{':
                             match('{'); 
                             statlist();
@@ -140,6 +139,7 @@ public class Translator {
                 match(Tag.ID);
                 idlistp();
                 break;
+                
             default:
                     break;
         }
@@ -147,12 +147,27 @@ public class Translator {
     private void expr( int label_condition ) {
         switch(look.tag) {
 	// ... completare ...
-            case '-':
+            case '-': //case sub
                 match('-');
                 expr(label_condition);
                 expr(label_condition);
                 code.emit(OpCode.isub);
                 break;
+            case '+': //case sum 
+                match('+');
+                expr(label_condition);
+                expr(label_condition);
+                code.emit(OpCode.iadd);
+                break;
+            case '*': //case moltiplication
+                    match('*');
+                    expr(label_condition);
+                    expr(label_condition);
+                    code.emit(OpCode.imul);
+            case Tag.ID:
+                        Token id = look; 
+                        match(Tag.ID);
+                        code.emit(OpCode.iload, st.lookupAddress(((Word)id).lexeme));
 	// ... completare ...
         }
     }
@@ -179,94 +194,89 @@ public class Translator {
         stat();
         statlist();
     }
-    private void oplist()
+    private void oplist( int label_condition)
     {
-        optiterm();
-        optlistp();
+        optiterm(label_condition);
+        optlistp(label_condition);
     }
-    private void optlistp()
+    private void optlistp(int label_condition)
     {
             if(look.tag==Tag.OPTION)
             {
-                optiterm();
-                optlistp();
+                optiterm(label_condition);
+                optlistp(label_condition);
             }
     }
-    private void optiterm()
+    private void optiterm(int label_condition)
     {
         switch(look.tag)
         {
             case Tag.OPTION:
+                int true_label_opt = code.newLabel() ; 
+                int false_label_opt=  code.newLabel(); 
                 match(Tag.OPTION);
                 match('(');
-                bexpr(label_condition);
+                bexpr(true_label_opt , false_label_opt);
                 match(')');
                 match(Tag.DO);
+                code.emitLabel(true_label_opt);
                 stat();
+                code.emit(OpCode.GOto, label_condition);
+                code.emitLabel(false_label_opt);
                 break;
         }
     }
-    private void bexpr(int label_condition)
+    private void bexpr(int label_true , int label_false)
     {
             if(look==Word.eq)
             {
                     match(Tag.RELOP); 
-                    expr(label_condition);
-                    expr(label_condition);
-                    code.emit(OpCode.if_icmpeq, label_condition);
-                    label_condition=1;
-                    code.emit(OpCode.GOto, label_condition);
+                    expr();
+                    expr();
+                    code.emit(OpCode.if_icmpeq, label_true);
+                    code.emit(OpCode.GOto, label_false);
             }
             if(look==Word.ge)
             {
                 match(Tag.RELOP);
-                expr(label_condition);
-                expr(label_condition);
-                code.emit(OpCode.if_icmpge, label_condition);
-                label_condition=1;
-
-                code.emit(OpCode.GOto,label_condition); 
+                expr();
+                expr();
+                code.emit(OpCode.if_icmpge, label_true);
+                code.emit(OpCode.GOto,label_false); 
             }
             if(look==Word.gt)
             {
                 match(Tag.RELOP);
-                expr(label_condition);
-                expr(label_condition);
-                code.emit(OpCode.if_icmpgt, label_condition);
-                label_condition=1;
-
-                code.emit(OpCode.GOto, label_condition); 
+                expr();
+                expr();
+                code.emit(OpCode.if_icmpgt, label_true);
+                code.emit(OpCode.GOto,label_false);  
 
             }
             if(look==Word.le)
             {
-                match(Tag.RELOP);
-                expr(label_condition);
-                expr(label_condition);
-                code.emit(OpCode.if_icmple, label_condition);
-                label_condition=1;
-
-                code.emit(OpCode.GOto ,label_condition);
+              match(Tag.RELOP);
+                expr();
+                expr();
+                code.emit(OpCode.if_icmple, label_true);
+                code.emit(OpCode.GOto,label_false); 
                 
             }
             if(look==Word.lt)
             {
                 match(Tag.RELOP);
-                expr(label_condition);
-                expr(label_condition);
-                code.emit(OpCode.if_icmplt, label_condition);
-                label_condition=1;
-
-                code.emit(OpCode.GOto, label_condition);
+                expr();
+                expr();
+                code.emit(OpCode.if_icmplt, label_true);
+                code.emit(OpCode.GOto,label_false); 
             }
             if(look==Word.ne)
             {
                 match(Tag.RELOP);
-                expr(label_condition);
-                expr(label_condition);
-                code.emit(OpCode.if_icmpne, label_condition);
-                label_condition=1;//false 
-                code.emit(OpCode.GOto, label_condition);
+                expr();
+                expr();
+                code.emit(OpCode.if_icmpne, label_true);
+                code.emit(OpCode.GOto,label_false); 
             }
             
     }

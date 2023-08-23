@@ -246,10 +246,12 @@ public class Lexer {
 		
     public static void main(String[] args) {
         Lexer lex = new Lexer();
-        String path = "/Users/popper/Documents/Uni/secondo anno /LFT/GIT/LFT/LFT-Lab/LEXER/2_1/input.txt"; // il percorso del file da leggere
+        String path = "/Users/popper/Documents/Uni/secondo anno /LFT/GIT/LFT/LFT-Lab/ByteCode/inqput.lft"; // il percorso del file da leggere
         try {
             BufferedReader br = new BufferedReader(new FileReader(path));
             Token tok;
+            Translator translator = new Translator(lex, br);
+            translator.prog();
             do {
                 tok = lex.lexical_scan(br);
                 System.out.println("Scan: " + tok);
