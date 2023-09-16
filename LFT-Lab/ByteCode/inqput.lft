@@ -1,1 +1,10 @@
-while(x>y)
+assign 10 to x;
+assign 0 to a;
+assign 12 to c;
+while(> x 0){assign -x 1 to x ; print[x]}  
+read[x]; 
+read[c]; 
+conditional[option(> x 0 ) do print[x,c]
+            option(> a 0 ) do print[a]
+            ]end
+print[+(a,1)]

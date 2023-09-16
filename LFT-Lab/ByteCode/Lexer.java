@@ -1,11 +1,15 @@
-
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 
 public class Lexer {
 
     public static int line = 1;
     private char peek = ' ';
-    
+    static String num;
+    static String s = "";
+    static String ID = "";
+
     private void readch(BufferedReader br) {
         try {
             peek = (char) br.read();
@@ -14,250 +18,262 @@ public class Lexer {
         }
     }
 
-    public Token lexical_scan(BufferedReader br) {
+    public Token lexical_scan(BufferedReader br){
         while (peek == ' ' || peek == '\t' || peek == '\n'  || peek == '\r') {
             if (peek == '\n') line++;
             readch(br);
         }
-        
-        switch (peek) {
-            case '!':
-               readch(br);
-                peek = ' ';
-                return Token.not;
 
-            case '(':
-                    readch(br);
-                        peek=' '; 
-                        return Token.lpt;
-            case ')':
-                    readch(br);
-                    peek=' '; 
-                    return Token.rpt;
-        
-           case '[':
-                    readch(br);
-                    peek=' ';
-                    return Token.lpq;
-            case ']':
+        switch (peek) {
+            case '!' -> {
                 readch(br);
-                peek=' '; 
+                if (peek == '=') {
+                    peek = ' ';
+                    return Word.ne;
+                } else {
+                    peek = ' ';
+                    return Token.not;
+                }
+            }
+            case '(' -> {
+                peek = ' ';
+                return Token.lpt;
+            }
+            case ')' -> {
+                peek = ' ';
+                return Token.rpt;
+            }
+            case '[' -> {
+                peek = ' ';
+                return Token.lpq;
+            }
+            case ']' -> {
+                peek = ' ';
                 return Token.rpq;
-            case '{':
-                    readch(br);
-                    peek=' '; 
-                    return Token.lpg; 
-            case '}':
-                    readch(br);
-                    peek=' '; 
-                    return Token.rpg;
-            case '+':
-                readch(br); 
-                return Token.plus; 
-            case '-':
-                readch(br);
-                peek=' '; 
+            }
+            case '{' -> {
+                peek = ' ';
+                return Token.lpg;
+            }
+            case '}' -> {
+                peek = ' ';
+                return Token.rpg;
+            }
+            case '+' -> {
+                peek = ' ';
+                return Token.plus;
+            }
+            case '-' -> {
+                peek = ' ';
                 return Token.minus;
-            case '*':
-                    readch(br);
-                    peek=' '; 
-                    return Token.mult;
-            case '/':
-                    readch(br);
-                    if(peek=='/') //caso commento singolo con doppio '/'
-                    {
-                        while(peek=='\n') //leggo caratteri fino alla fine della stringa 
-                        {
-                            readch(br);
+            }
+            case '*' -> {
+                peek = ' ';
+                return Token.mult;
+            }
+            case '/' -> {
+                readch(br);
+                if (peek == '/') {
+                    while (peek != '\n') {
+                        readch(br);
+                        if (peek == (char) -1) {
+                            return new Token(Tag.EOF);
                         }
-                    } else if(peek=='*')
-                    {
-                        while(true)
-                        {
+                    }
+                    return lexical_scan(br);
+                } else if (peek == '*') {
+                    boolean continua = true;
+                    while (continua) {
+                        readch(br);
+                        if (peek == '*') {
                             readch(br);
-                            if(peek=='*')
-                            {
-                                if(peek=='/')
-                                {
-                                    break;
-                                }
+                            if (peek == '/') {
+                                continua = false;
                             }
                         }
-                    } else {
-                        peek=' '; 
-                        return Token.div;  
                     }
-                    
-
-            case ';':
                     readch(br);
-                    peek = ' '; 
-                    return Token.semicolon;
-            case ',':
-                    readch(br);
-                    peek= ' '; 
-                    return Token.comma;
-
-
-	// ... gestire i casi di ( ) [ ] { } + - * / ; , ... //
-	
-            case '&':
+                    return lexical_scan(br);
+                } else {
+                    peek = ' ';
+                    return Token.div;
+                }
+            }
+            case ';' -> {
+                peek = ' ';
+                return Token.semicolon;
+            }
+            case ',' -> {
+                peek = ' ';
+                return Token.comma;
+            }
+            case '&' -> {
                 readch(br);
                 if (peek == '&') {
                     peek = ' ';
                     return Word.and;
                 } else {
-                    System.err.println("Erroneous character"
-                            + " after & : "  + peek );
-                    return null;
+                    System.err.println("LEXER: Erroneous character after & : " + peek);
                 }
-            case '<':
-                    readch(br);
-                    if(peek=='='){
-                    peek=' '; 
+            }
+            case '|' -> {
+                readch(br);
+                if (peek == '|') {
+                    peek = ' ';
+                    return Word.or;
+                } else {
+                    System.err.println("LEXER: Erroneous character after | : " + peek);
+                }
+            }
+            case '<' -> {
+                readch(br);
+                if (peek == '=') {
+                    peek = ' ';
                     return Word.le;
-                    }
-                    else if(peek=='>')
-                    {
-                        peek =' '; 
-                        return Word.ne;
-                    }
-                    else{
-                        return Word.lt;
-                    }
-            case '>':
-                    readch(br);
-                    if(peek=='=')
-                    {
-                        peek=' ';
-                        return Word.ge;
-                    }
-                     else if(peek=='<')
-                    {
-                        peek=' '; 
-                        return Word.ne;
-                    }
-                    else{
-                        return Word.gt;
-                    }
-            case '=':
-                    readch(br);
-                    if(peek=='=')
-                    {
-                        peek=' '; 
-                        return Word.eq;
-                    }        
-
-                case '|':
-                    readch(br);
-                    if(peek=='|')
-                    {
-                        peek=' ';
-                        return Word.or; 
-                    }
-                    
-             
-	// ... gestire i casi di || < > <= >= == <> ... //
-          
-
-            case (char)-1:
+                } else if (peek == '>') {
+                    peek = ' ';
+                    return Word.ne;
+                } else {
+                    peek = ' ';
+                    return Word.lt;
+                }
+            }
+            case '>' -> {
+                readch(br);
+                if (peek == '=') {
+                    peek = ' ';
+                    return Word.ge;
+                } else {
+                    peek = ' ';
+                    return Word.gt;
+                }
+            }
+            case '=' -> {
+                readch(br);
+                if (peek == '=') {
+                    peek = ' ';
+                    return Word.eq;
+                } else {
+                    System.err.println("LEXER: Erroneous character after = : " + peek);
+                }
+            }
+            case (char) -1 -> {
                 return new Token(Tag.EOF);
-
-            default:
-            if(Character.isLetter(peek))
-            {      
-                String src = new String(); 
-                 while (Character.isLetter(peek) || peek=='_' ||Character.isDigit(peek))
-                  {
-                    src = src + peek ; 
-                    readch(br);
-                }
-             if(src.compareTo("conditional")==0)
-             {
-                return Word.conditional;
-             }
-             if(src.compareTo("else")==0)
-             {
-                return Word.elsetok; 
-             }
-             if(src.compareTo("while")==0)
-             {
-                return Word.whiletok; 
-             }
-             if(src.compareTo("begin")==0)
-             {
-                return Word.begin; 
-             }
-             if(src.compareTo("read")==0)
-             {
-                return Word.read;
-             }
-             if(src.compareTo("print")==0)
-             {
-                return Word.print;        
-             }
-             if(src.compareTo("to")==0)
-             {
-                return Word.to;
-             }
-             if(src.compareTo("end")==0)
-             {
-                return Word.end;
-             }
-             if(src.compareTo("option")==0)
-             {
-                return Word.option;
-             }
-             if(src.compareTo("assign")==0)
-             {
-                return Word.assign;
-             }
-             if(src.compareTo("do")==0)
-             {
-                return Word.dotok;
-             }
-             return new Word(Tag.ID, src);
-            
-             
-             
-
-	// ... gestire il caso degli identificatori e delle parole chiave //
-                
-          
-                    } else if (Character.isDigit(peek)) {
-                        String n = new String();
-                        while(Character.isDigit(peek)){
-                            n = n + peek;
-                            readch(br);
+            }
+            default -> {
+                if (lettera(peek)) {
+                    int state = 0;
+                    while (state >= 0 && (lettera(peek) || (peek >= '0' && peek <= '9'))) {
+                        switch (state) {
+                            case 0 -> {
+                                if (lettera(peek))
+                                    state = 1;
+                                else if (peek >= '0' && peek <= '9')
+                                    state = -1;
+                                else state = -1;
+                            }
+                            case 1 -> {
+                            }
                         }
-                         return new NumberTok(Tag.NUM, String.valueOf(n));
-                       
-
-                    } else {
-                            System.err.println("Erroneous character: " 
-                                    + peek );
-                            return null;
+                        s = s + peek;
+                        readch(br);
                     }
+                    if (state == 1) {
+                        if (s.compareTo("assign") == 0) {
+                            s = "";
+                            return Word.assign;
+                        } else if (s.compareTo("to") == 0) {
+                            s = "";
+                            return Word.to;
+                        } else if (s.compareTo("conditional") == 0) {
+                            s = "";
+                            return Word.conditional;
+                        } else if (s.compareTo("option") == 0) {
+                            s = "";
+                            return Word.option;
+                        } else if (s.compareTo("do") == 0) {
+                            s = "";
+                            return Word.dotok;
+                        } else if (s.compareTo("else") == 0) {
+                            s = "";
+                            return Word.elsetok;
+                        } else if (s.compareTo("while") == 0) {
+                            s = "";
+                            return Word.whiletok;
+                        } else if (s.compareTo("begin") == 0) {
+                            s = "";
+                            return Word.begin;
+                        } else if (s.compareTo("end") == 0) {
+                            s = "";
+                            return Word.end;
+                        } else if (s.compareTo("print") == 0) {
+                            s = "";
+                            return Word.print;
+                        } else if (s.compareTo("read") == 0) {
+                            s = "";
+                            return Word.read;
+                        } else {
+                            ID = s;
+                            s = "";
+                            return new Word(Tag.ID, ID);
+                        }
+                    }
+
+
+                    // ... gestire il caso degli identificatori FATTO e delle parole chiave //
+
+                } else if (Character.isDigit(peek)) {
+                    boolean isValid = true, continua = true;
+                    StringBuilder wordBuild = new StringBuilder();
+                    while (continua) {
+                        if (Character.isDigit(peek)) {
+                            wordBuild.append(peek);
+                            readch(br);
+                        } else if ((Character.isLetter(peek) || peek == '_') && peek != ' ') {
+                            wordBuild.append(peek);
+                            readch(br);
+                            isValid = false;
+                        } else {
+                            continua = false;
+                        }
+                    }
+                    num = wordBuild.toString();
+                    if (!isValid) {
+                        System.err.println("LEXER: Erroneous character in number: " + peek);
+                    } else {
+                        return new NumberTok(Tag.NUM, num);
+                    }
+                } else {
+                    System.err.println("LEXER: Erroneous character: " + peek);
                 }
-                
-                    
-    
+            }
+        }
+        return null;
     }
-		
+
+    public static int getNUM(){
+        return Integer.parseInt(num);
+    }
+
+    public static boolean lettera(char ch){
+        if(ch>='a' && ch<='z') return true;
+        else return ch >= 'A' && ch <= 'Z';
+    }
+    public static String getID(){ return ID; }
+
     public static void main(String[] args) {
         Lexer lex = new Lexer();
-        String path = "/Users/popper/Documents/Uni/secondo anno /LFT/GIT/LFT/LFT-Lab/ByteCode/inqput.lft"; // il percorso del file da leggere
+        String path = "/Users/popper/Downloads/LFT-DEVELOP/LFT-Lab/ByteCode/inqput.lft"; // il percorso del file da leggere
         try {
             BufferedReader br = new BufferedReader(new FileReader(path));
             Token tok;
-            Translator translator = new Translator(lex, br);
-            translator.prog();
             do {
                 tok = lex.lexical_scan(br);
                 System.out.println("Scan: " + tok);
-            } while (tok.tag != Tag.EOF);
+            }while (tok.tag != Tag.EOF);
             br.close();
-        } catch (IOException e) {e.printStackTrace();}    
+        } catch (IOException e) {e.printStackTrace();}
     }
+
 
 }

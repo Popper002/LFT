@@ -1,4 +1,6 @@
 import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 
 
 
@@ -25,7 +27,7 @@ public class Translator {
 
     void error(String s) { 
 	// come in Esercizio 3.1
-        throw new Error("NEAR LINE"+lex.line +";"+s);
+        throw new Error("TRASLATOR : NEAR LINE"+lex.line +";"+s);
     }
 
     void match(int t) {
@@ -36,48 +38,49 @@ public class Translator {
                 move();
             }
             else{
-                error("SYNTAX ERROR\n");
+                error("TRASLATOR: SYNTAX ERROR, searching for " + look.tag + ", found " + t);
             }
         }
     }
 
-    public void prog() {        
+    public void prog() {         /*DA RIVEDERE  */
 	// ... completare ...
     int lnext_prog = code.newLabel();
-        statlist();
+        statlist(lnext_prog);
         code.emitLabel(lnext_prog);
-        match(Tag.EOF);
+       // match(Tag.EOF);
         try {
         	code.toJasmin();
         }
         catch(java.io.IOException e) {
-        	System.out.println("IO error\n");
+        	System.out.println("TRANSLATOR : IO error\n");
         };
 	// ... completare ...
     }
 
-    public void stat( /* completare */ ) {
+    public void stat(int label_condition ) {
         switch(look.tag) {
 	// ... completare ...
             case Tag.READ:
                 match(Tag.READ);
                 match('[');
-	            idlist(/* completare */);
+	            idlist(0);
                 match(']');
-                code.emit(OpCode.invokestatic,0);
                 break;
             case Tag.ASSIGN:
+                int label_start_assign  = code.newLabel(); 
                 match(Tag.ASSIGN); 
+                code.emitLabel(label_start_assign);
                 expr(label_condition); 
                 match(Tag.TO);
-                idlist();
+                idlist(1);
                 break;
             case Tag.PRINT:
                     match(Tag.PRINT);
                     match('[');
                     exprlist(label_condition);
-                    match(']');
                     code.emit(OpCode.invokestatic,1);
+                    match(']');
                     break;
             case Tag.WHILE:
                     match(Tag.WHILE);
@@ -89,10 +92,9 @@ public class Translator {
                     bexpr(label_true_while, label_false_while);
                     code.emitLabel(label_true_while);
                     match(')');
-                    stat(); //gestisce le istruzioni
+                    stat(label_condition); //gestisce le istruzioni
                     code.emit(OpCode.GOto, label_start_while);
                     code.emitLabel(label_false_while);
-              /* inserire print ,label * flusso while  */
                     break;
             case Tag.COND:
                         match(Tag.COND);
@@ -101,24 +103,39 @@ public class Translator {
                         int label_else =code.newLabel();
                         int label_and=code.newLabel();
                         oplist(label_and);
+                        code.emitLabel(label_else);
                         match(']'); 
+                        ll(label_condition); 
+                        break;
 
                         /* inserire altre label  */
             case '{':
                             match('{'); 
-                            statlist();
+                            statlist(label_condition);
                             match('}'); 
                             break;
                         default:
-                                error("ERROR STAT_FUNCTION\n");
+                               
                                 break;
             
                  
 	// ... completare ...
         }
      }
-
-    private void idlist(/* completare */) {
+     public void ll( int label_condition)
+     {
+        switch(look.tag)
+        {
+            case Tag.ELSE:
+                match(Tag.ELSE);
+                stat(label_condition);
+            case Tag.END:
+                match(Tag.END);
+                code.emitLabel(label_condition);
+                break;
+        }
+     }
+    private void idlist(int label_condition) {
         switch(look.tag) {
 	    case Tag.ID:
         	int id_addr = st.lookupAddress(((Word)look).lexeme);
@@ -127,21 +144,54 @@ public class Translator {
                     st.insert(((Word)look).lexeme,count++);
                 }
                 match(Tag.ID);
-	// ... completare ...
+            switch(label_condition)
+            {
+                case 0 : 
+                    code.emit(OpCode.invokestatic,0);
+                    code.emit(OpCode.istore , id_addr); 
+                    break;
+                case 1 : 
+                    code. emit(OpCode.istore, id_addr);
+                    break  ;    
+                default:
+                    break;
+            }
+
     	}
     }
-    private void idlistp()
+    private void idlistp(int code_emit)
     {
         switch(look.tag)
         {
-            case ',':
+           
+         case ',':
                 match(',');
-                match(Tag.ID);
-                idlistp();
+                switch(look.tag) {
+	            case Tag.ID:
+                    int id_addr = st.lookupAddress(((Word)look).lexeme);
+                    if (id_addr==-1) {
+                        id_addr = count;
+                        st.insert(((Word)look).lexeme,count++);
+                    }
+                    match(Tag.ID);           
+                    switch(code_emit)
+                    {
+                        case 0 : 
+                            code.emit(OpCode.invokestatic,0);
+                            code.emit(OpCode.istore, id_addr);
+                            break;
+                        case 1: 
+                            code.emit(OpCode.istore, id_addr);
+                            break;
+                        default: 
+                                break;
+                    
+                    }
+                }      
+            break;
+
+        case Tag.EOF,'}',';':
                 break;
-                
-            default:
-                    break;
         }
     }
     private void expr( int label_condition ) {
@@ -155,20 +205,35 @@ public class Translator {
                 break;
             case '+': //case sum 
                 match('+');
-                expr(label_condition);
-                expr(label_condition);
+                match('(');
+                exprlist(label_condition);
+                match(')');
                 code.emit(OpCode.iadd);
                 break;
             case '*': //case moltiplication
                     match('*');
-                    expr(label_condition);
-                    expr(label_condition);
+                    match('(');
+                    exprlist(label_condition);
+                    match(')');
                     code.emit(OpCode.imul);
+                    break;
+            case '/': 
+                    match('/');
+                    expr(label_condition);
+                    expr(label_condition);
+                    code.emit(OpCode.idiv);
+                    break;
             case Tag.ID:
                         Token id = look; 
                         match(Tag.ID);
-                        code.emit(OpCode.iload, st.lookupAddress(((Word)id).lexeme));
-	// ... completare ...
+                        code.emit(OpCode.iload, st.lookupAddress(((Word)id).lexeme));/*cerca varibile in tabella ,se non è presente returna errore */
+                        break;
+            case Tag.NUM:
+                     code.emit(OpCode.ldc, Lexer.getNUM());
+                     match(Tag.NUM);
+                     break;              
+            default: 
+                    break;            // ... completare ...
         }
     }
     private void exprlist(int label_condition)
@@ -185,14 +250,16 @@ public class Translator {
                     expr(label_condition);
                     exprlistp(label_condition);
                     break;
+            case Tag.EOF,'}',';':
+                    break;
             default:
-                break;
+                    break;
         }
     }
-    private void statlist()
+    private void statlist(int label_condition)
     {
-        stat();
-        statlist();
+        stat(label_condition);
+        statlistp(label_condition);
     }
     private void oplist( int label_condition)
     {
@@ -220,35 +287,37 @@ public class Translator {
                 match(')');
                 match(Tag.DO);
                 code.emitLabel(true_label_opt);
-                stat();
+                stat(label_condition);
                 code.emit(OpCode.GOto, label_condition);
                 code.emitLabel(false_label_opt);
                 break;
+            default:
+                break;  
         }
     }
     private void bexpr(int label_true , int label_false)
     {
             if(look==Word.eq)
             {
-                    match(Tag.RELOP); 
-                    expr();
-                    expr();
-                    code.emit(OpCode.if_icmpeq, label_true);
-                    code.emit(OpCode.GOto, label_false);
+                match(Tag.RELOP); 
+                expr(label_true);
+                expr(label_false);
+                code.emit(OpCode.if_icmpeq, label_true);
+                code.emit(OpCode.GOto, label_false);
             }
             if(look==Word.ge)
             {
                 match(Tag.RELOP);
-                expr();
-                expr();
+                expr(label_true);
+                expr(label_false);
                 code.emit(OpCode.if_icmpge, label_true);
                 code.emit(OpCode.GOto,label_false); 
             }
             if(look==Word.gt)
             {
                 match(Tag.RELOP);
-                expr();
-                expr();
+                expr(label_true);
+                expr(label_false);
                 code.emit(OpCode.if_icmpgt, label_true);
                 code.emit(OpCode.GOto,label_false);  
 
@@ -256,8 +325,8 @@ public class Translator {
             if(look==Word.le)
             {
               match(Tag.RELOP);
-                expr();
-                expr();
+                expr(label_true);
+                expr(label_false);
                 code.emit(OpCode.if_icmple, label_true);
                 code.emit(OpCode.GOto,label_false); 
                 
@@ -265,37 +334,61 @@ public class Translator {
             if(look==Word.lt)
             {
                 match(Tag.RELOP);
-                expr();
-                expr();
+                expr(label_true);
+                expr(label_false);
                 code.emit(OpCode.if_icmplt, label_true);
                 code.emit(OpCode.GOto,label_false); 
             }
             if(look==Word.ne)
             {
                 match(Tag.RELOP);
-                expr();
-                expr();
+                expr(label_true);
+                expr(label_false);
                 code.emit(OpCode.if_icmpne, label_true);
                 code.emit(OpCode.GOto,label_false); 
             }
             
     }
-    private void statlistp()
+    private void statlistp(int label_condition)
     {
         switch(look.tag)
         {
             case ';':
                     match(';');
-                    stat();
-                    statlist();
+                    stat(label_condition);
+                    statlist(label_condition);
                     break;
             case Tag.EOF,'}':
             break;
+
             default:
-                error("ERROR IN TRANSLATOR_STATLIST\n");
+                    break;
         }
     }
   
     
-// ... completare ...
+ public static void main(String[] args) {
+                Lexer lex = new Lexer();
+                String path = "/Users/popper/Downloads/LFT-DEVELOP/LFT-Lab/ByteCode/inqput.lft"; // il percorso del file da leggere
+                try {
+                    BufferedReader br = new BufferedReader(new FileReader(path));
+                    Token tok;
+                    Translator translator = new Translator(lex, br);
+                    translator.prog();
+                    do {
+                        tok = lex.lexical_scan(br);
+                        System.out.println("Scan: " + tok);
+                    } while (tok.tag != Tag.EOF);
+                    br.close();
+                } catch (IOException e) {e.printStackTrace();}    
+            }
 }
+
+
+
+/* BUG  DA FIXARE : 
+ *  1) LA GRAMMATICA NON PREVEDE LA SEGUENTE NOTAZIONE PER PRINT E READ 
+ *  print(1,(a,1)); ma --> print[1,[a,1]]; uguale per le READ 
+ *  2) VEDENDO L'ESEMPIO DI SPROSTRON LUI NELL'OUTPUT SU FILE HA CHE AD OGNI LINEA UN GOTO ALLA LABEL SUCCESSIVA 
+ *  OVVERO OGNI ; LANCIA UN GOTO .
+ */

@@ -79,7 +79,7 @@ public class Parser {
                 case Tag.EOF, '}':
                     break;
                 default:
-                    error("ERROR IN STATLISTP\n");
+                    error(" PARSER : ERROR IN STATLISTP\n");
 
             }
         }
@@ -134,7 +134,7 @@ public class Parser {
                     break;
                   
                 default:
-                    error("ERROR\n"); 
+                    error("PARSER : ERROR\n"); 
                     break;
                 }
             }
