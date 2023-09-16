@@ -101,11 +101,11 @@ public class Translator {
                         match('['); 
                         int label_start_if = code.newLabel();
                         int label_else =code.newLabel();
-                        int label_and=code.newLabel();
-                        oplist(label_and);
+                        int label_end=code.newLabel();
+                        oplist(label_end);
                         code.emitLabel(label_else);
                         match(']'); 
-                        ll(label_condition); 
+                        ll(label_end); 
                         break;
 
                         /* inserire altre label  */

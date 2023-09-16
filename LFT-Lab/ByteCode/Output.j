@@ -78,7 +78,7 @@ L13:
  goto L10
 L14:
 L9:
-L0:
+L10:
  iload 1
  ldc 1
  iadd 
