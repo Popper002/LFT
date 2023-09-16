@@ -99,13 +99,11 @@ public class Translator {
             case Tag.COND:
                         match(Tag.COND);
                         match('['); 
-                        int label_start_if = code.newLabel();
                         int label_else =code.newLabel();
                         int label_end=code.newLabel();
                         oplist(label_end);
-                        code.emitLabel(label_else);
                         match(']'); 
-                        ll(label_end); 
+                        ll(label_else,label_end); 
                         break;
 
                         /* inserire altre label  */
@@ -122,16 +120,17 @@ public class Translator {
 	// ... completare ...
         }
      }
-     public void ll( int label_condition)
+     public void ll( int label_else,int label_end)
      {
         switch(look.tag)
         {
             case Tag.ELSE:
                 match(Tag.ELSE);
-                stat(label_condition);
+               code.emitLabel(label_else);
+                stat(label_else);
             case Tag.END:
                 match(Tag.END);
-                code.emitLabel(label_condition);
+                code.emitLabel(label_end);
                 break;
         }
      }
@@ -369,7 +368,7 @@ public class Translator {
     
  public static void main(String[] args) {
                 Lexer lex = new Lexer();
-                String path = "/Users/popper/Downloads/LFT-DEVELOP/LFT-Lab/ByteCode/inqput.lft"; // il percorso del file da leggere
+                String path = "/Users/popper/Documents/Uni/secondo anno /LFT/GIT/LFT/LFT-Lab/ByteCode/inqput.lft"; // il percorso del file da leggere
                 try {
                     BufferedReader br = new BufferedReader(new FileReader(path));
                     Token tok;

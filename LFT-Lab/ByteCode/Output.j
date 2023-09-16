@@ -31,58 +31,24 @@
  .limit stack 1024
  .limit locals 256
 L1:
- ldc 10
- istore 0
-L2:
- ldc 0
- istore 1
-L3:
- ldc 12
- istore 2
-L4:
- iload 0
- ldc 0
- if_icmpgt L5
- goto L6
-L5:
-L7:
- iload 0
  ldc 1
  isub 
  istore 0
  iload 0
+ ldc 0
+ if_icmpgt L4
+ goto L5
+L4:
+ iload 0
  invokestatic Output/print(I)V
- goto L4
 L6:
- invokestatic Output/read()I
- istore 0
- invokestatic Output/read()I
- istore 2
  iload 0
- ldc 0
- if_icmpgt L11
- goto L12
-L11:
- iload 0
- iload 2
- invokestatic Output/print(I)V
- goto L10
-L12:
- iload 1
- ldc 0
- if_icmpgt L13
- goto L14
-L13:
- iload 1
- invokestatic Output/print(I)V
- goto L10
-L14:
-L9:
-L10:
- iload 1
  ldc 1
- iadd 
- invokestatic Output/print(I)V
+ isub 
+ istore 0
+ goto L3
+L5:
+L3:
 L0:
  return
 .end method
