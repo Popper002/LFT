@@ -62,7 +62,7 @@ public class Es1_10
       System.out.println(scan("a/**/***/a") ? "OK":"NOPE");// Atteso --> OK 
       System.out.println("--------------TEST AGGIUNTIVI ---------------------");
       System.out.println(scan("“a/**/aa/***/a")? "Ok": "NOPE"); //Atteso --> NOPE
-      System.out.println(scan("1Porco2deo")? "OK": "NOPE"); //Atteso --> Nope  
+      System.out.println(scan(" ")? "OK": "NOPE"); //Atteso --> Nope  
       System.out.println(scan("212334FIKA") ? "OK": "NOPE"); //Atteso--> NOPE
       System.out.println(scan("0000000")? "OK": "NOPE") ; //ATTESO --> NOPE
       System.out.println(scan("0000000CIAO2121")? "OK": "NOPE") ; //ATTESO --> NOPE
