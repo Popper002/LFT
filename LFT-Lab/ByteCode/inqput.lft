@@ -1,2 +1,6 @@
-assign 1 to x;
-conditional[option( > x 0 ) do {print[x]; assign -x 1 to x}]end
+/* CIAO */
+assign 10 to x; 
+print[x]; 
+assign 31 to c; 
+print[+x,c];
+conditional[option(> x c)do{ print[x]; }]end
