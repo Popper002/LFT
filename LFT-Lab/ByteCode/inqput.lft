@@ -1,0 +1,6 @@
+/* CIAO */
+assign 10 to x; 
+print[x]; 
+assign 31 to c; 
+print[+x,c];
+conditional[option(> x c)do{ print[x]; }]end

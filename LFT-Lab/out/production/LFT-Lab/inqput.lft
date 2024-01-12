@@ -1,0 +1,5 @@
+assign 10 to x;
+read(x);
+print(+(a,1));
+assign 212 to t; 
+print(*(x,t))
